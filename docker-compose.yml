@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  web:
+    container_name: web-artificial-intelligence
+    build: .
+    entrypoint: sh ./docker-entrypoint.sh
+    volumes:
+      - .:/app
+    expose:
+      - 8080
+    networks:
+      - app-network-artificial-intelligence
+
+  nginx:
+    container_name: nginx-artificial-intelligence
+    image: nginx:latest
+    ports:
+      - "8086:80"
+      - "4446:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./ssl:/etc/nginx/ssl
+    depends_on:
+      - web
+    networks:
+      - app-network-artificial-intelligence
+
+networks:
+  app-network-artificial-intelligence:
+    driver: bridge

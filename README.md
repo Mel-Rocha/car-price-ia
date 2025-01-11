@@ -11,7 +11,8 @@ source venv/bin/activate
 ```bash
 pip install -r requirements.txt
 ```
-4. Rode o projeto localmente
+### Rodar localmente
+4. Rode o projeto 
 ```bash
 uvicorn main:app --reload
 ```
@@ -19,7 +20,15 @@ uvicorn main:app --reload
 ```bash
 http://127.0.0.1:8000/docs#/
 ```
-
+### Rodar no Docker
+4. Rode o projeto 
+```bash
+docker compose up --build
+```
+5. Acesse o projeto na porta.
+```bash
+http://0.0.0.0:8086/docs#/
+```
 
 
 
