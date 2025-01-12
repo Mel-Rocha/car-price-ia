@@ -42,4 +42,4 @@ app.openapi = lambda: custom_openapi(app)
 
 @app.on_event('startup')
 async def startup_event():
-    config.load_valid_models('valid_models.csv')
+    config.load_valid_models('data/valid_models.csv')
