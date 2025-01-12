@@ -5,6 +5,7 @@ from apps.car import routes as car_router
 from apps.docs import routes as docs_router
 from apps.auth.middlewares import AuthMiddleware
 from apps.docs.custom_openai import custom_openapi
+from settings import config
 
 
 def create_application() -> FastAPI:
@@ -37,3 +38,9 @@ def create_application() -> FastAPI:
 app = create_application()
 
 app.openapi = lambda: custom_openapi(app)
+
+
+@app.on_event('startup')
+async def startup_event():
+    config.load_valid_models('data/valid_models.csv')
+    config.load_valid_brands('data/valid_brands.csv')
