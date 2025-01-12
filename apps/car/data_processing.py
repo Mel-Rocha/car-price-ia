@@ -7,6 +7,7 @@ from settings import NUMERIC_NORMALIZER, CATEGORICAL_TRANSFORMER
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 NORMALIZER = joblib.load(NUMERIC_NORMALIZER)
 TRANSFORMER = joblib.load(CATEGORICAL_TRANSFORMER)
 
