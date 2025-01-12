@@ -1,5 +1,13 @@
 import csv
 
+import joblib
+
+
+CATEGORICAL_TRANSFORMER = joblib.load('artifacts/label_encoders.pkl')
+NUMERIC_NORMALIZER = joblib.load('artifacts/label_encoders.pkl')
+TRAINED_MODEL = joblib.load('artifacts/decision_tree_model.pkl')
+
+
 class Config:
     valid_models = set()
     valid_brands = set()
