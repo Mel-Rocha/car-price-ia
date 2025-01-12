@@ -3,7 +3,7 @@ import csv
 
 
 CATEGORICAL_TRANSFORMER = os.path.join('artifacts', 'label_encoders.pkl')
-NUMERIC_NORMALIZER = os.path.join('artifacts', 'label_encoders.pkl')
+NUMERIC_NORMALIZER = os.path.join('artifacts', 'standard_scaler.pkl')
 TRAINED_MODEL = os.path.join('artifacts', 'decision_tree_model.pkl')
 
 
