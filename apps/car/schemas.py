@@ -1,5 +1,7 @@
 from pydantic import BaseModel, validator
 
+from settings import config
+
 
 class Car(BaseModel):
     year_of_reference: int
@@ -24,4 +26,10 @@ class Car(BaseModel):
         allowed_gears = ['automatic', 'manual']
         if value not in allowed_gears:
             raise ValueError(f'Invalid gear type: {value}. Allowed values are: {allowed_gears}')
+        return value
+
+    @validator('model')
+    def validate_model(cls, value):
+        if value not in config.valid_models:
+            raise ValueError(f'Invalid model: {value}. Enter a model present in the valid_models.csv file')
         return value
