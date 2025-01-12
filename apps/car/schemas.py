@@ -39,3 +39,21 @@ class Car(BaseModel):
         if value not in config.valid_brands:
             raise ValueError(f'Invalid brand: {value}. Enter a brand present in the valid_brands.csv file')
         return value
+
+    @validator('month_of_reference')
+    def validate_month_of_reference(cls, value):
+        if value < 1 or value > 12:
+            raise ValueError('Invalid month_of_reference: must be between 1 and 12')
+        return value
+
+    @validator('year_of_reference')
+    def validate_year_of_reference(cls, value):
+        if value != 2022:
+            raise ValueError('Invalid year_of_reference: must be 2022')
+        return value
+
+    @validator('year_model')
+    def validate_year_model(cls, value):
+        if value < 1985 or value > 2100:
+            raise ValueError('Invalid year_model: must be between 1985 and 2100')
+        return value
