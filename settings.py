@@ -5,7 +5,8 @@ import csv
 CATEGORICAL_TRANSFORMER = os.path.join('artifacts', 'onehotencoder.pkl')
 NUMERIC_NORMALIZER = os.path.join('artifacts', 'scaler.pkl')
 TRAINED_MODEL = os.path.join('artifacts', 'randfor_model.pkl')
-
+X_TEST_PATH = os.path.join('artifacts', 'X_test.csv')
+ORIGINAL_DF = os.path.join('artifacts', 'clean_original_df.csv')
 
 class Config:
     valid_brands = set()
