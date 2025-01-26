@@ -1,7 +1,7 @@
 import logging
 
 import pandas as pd
-
+from sklearn.preprocessing import StandardScaler, OneHotEncoder
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -9,7 +9,8 @@ logger = logging.getLogger(__name__)
 
 
 
-def transform_data(input_data: pd.DataFrame, NORMALIZER, TRANSFORMER, X_test, df) -> pd.DataFrame:
+def transform_data(input_data: pd.DataFrame, NORMALIZER: StandardScaler,
+                   TRANSFORMER: OneHotEncoder, X_test: pd.DataFrame, df: pd.DataFrame) -> pd.DataFrame:
     # Adicionar features calculadas
     current_year = pd.Timestamp.now().year
     input_data['age_years'] = current_year - input_data['year_model']
