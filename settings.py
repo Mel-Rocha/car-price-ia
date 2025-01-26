@@ -5,8 +5,8 @@ import csv
 TRANSFORMER_PATH = os.path.join('artifacts', 'onehotencoder.pkl')
 NORMALIZER_PATH = os.path.join('artifacts', 'scaler.pkl')
 MODEL_PATH = os.path.join('artifacts', 'randfor_model.pkl')
-X_TEST_PATH = os.path.join('artifacts', 'X_test.csv')
-ORIGINAL_DF_PATH = os.path.join('artifacts', 'clean_original_df.csv')
+X_TEST_PATH = os.path.join('data', 'X_test.csv')
+ORIGINAL_DF_PATH = os.path.join('data', 'clean_original_df.csv')
 
 
 class Config:
