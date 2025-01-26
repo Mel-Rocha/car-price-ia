@@ -11,13 +11,15 @@ MODEL = joblib.load(TRAINED_MODEL)
 
 router = APIRouter()
 
-@router.post("/predict", response_model=float)
+@router.post("/predict", response_model=Car)
 async def predict_car_price(car: Car):
-    input_data = pd.DataFrame([car.dict()])
-    transformed_data = transform_data(input_data.copy())
-    predicted_price = MODEL.predict(transformed_data)
+    return car
 
-    if predicted_price is None:
-        raise HTTPException(status_code=400, detail="Prediction failed")
-
-    return predicted_price[0]
+    # input_data = pd.DataFrame([car.dict()])
+    # transformed_data = transform_data(input_data.copy())
+    # predicted_price = MODEL.predict(transformed_data)
+    #
+    # if predicted_price is None:
+    #     raise HTTPException(status_code=400, detail="Prediction failed")
+    #
+    # return predicted_price[0]
