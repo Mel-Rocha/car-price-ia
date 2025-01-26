@@ -16,9 +16,15 @@ def transform_data(input_data: pd.DataFrame, NORMALIZER: StandardScaler,
     input_data['age_years'] = current_year - input_data['year_model']
 
     # Calcular médias dinâmicas com base nos dados
-    input_data['brand_avg_price'] = input_data['brand'].apply(lambda x: df[df['brand'] == x]['price'].mean())
-    input_data['state_avg_price'] = input_data['state'].apply(lambda x: df[df['state'] == x]['price'].mean())
-    input_data['city_avg_price'] = input_data['city'].apply(lambda x: df[df['city'] == x]['price'].mean())
+    input_data['brand_avg_price'] = input_data['brand'].apply(
+        lambda x: df[df['brand'] == x]['price'].mean() if x in df['brand'].values else 0
+    )
+    input_data['state_avg_price'] = input_data['state'].apply(
+        lambda x: df[df['state'] == x]['price'].mean() if x in df['state'].values else 0
+    )
+    input_data['city_avg_price'] = input_data['city'].apply(
+        lambda x: df[df['city'] == x]['price'].mean() if x in df['city'].values else 0
+    )
 
     # Calcular desvio de preço
     def calculate_price_deviation(row):
