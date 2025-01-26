@@ -12,4 +12,3 @@ async def custom_swagger_ui():
         title="My API",
         oauth2_redirect_url="/docs/oauth2-redirect",
     )
-
