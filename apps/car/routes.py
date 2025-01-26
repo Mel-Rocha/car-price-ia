@@ -1,25 +1,27 @@
-import joblib
 import pandas as pd
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 
 from apps.car.schemas import Car
-from settings import TRAINED_MODEL
 from apps.car.data_processing import transform_data
 
-
-MODEL = joblib.load(TRAINED_MODEL)
 
 router = APIRouter()
 
 
 @router.post("/predict", response_model=dict)
-async def predict_car_price(car: Car):
+async def predict_car_price(request: Request, car: Car):
     try:
         # Converter o input para DataFrame
         input_data = pd.DataFrame([car.dict()])
 
+        MODEL = request.app.state.MODEL
+        NORMALIZER = request.app.state.NORMALIZER
+        TRANSFORMER = request.app.state.TRANSFORMER
+        X_test = request.app.state.X_test
+        df = request.app.state.ORIGINAL_DF
+
         # Transformar os dados
-        transformed_data = transform_data(input_data)
+        transformed_data = transform_data(input_data, NORMALIZER, TRANSFORMER, X_test, df)
 
         # Fazer a previsão
         predicted_price = MODEL.predict(transformed_data)[0]

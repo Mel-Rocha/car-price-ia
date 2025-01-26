@@ -1,21 +1,15 @@
 import logging
 
-import joblib
 import pandas as pd
 
-from settings import NUMERIC_NORMALIZER, CATEGORICAL_TRANSFORMER, X_TEST_PATH, ORIGINAL_DF
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-NORMALIZER = joblib.load(NUMERIC_NORMALIZER)
-TRANSFORMER = joblib.load(CATEGORICAL_TRANSFORMER)
-X_test = pd.read_csv(X_TEST_PATH)
-df = pd.read_csv(ORIGINAL_DF)
 
 
-def transform_data(input_data: pd.DataFrame) -> pd.DataFrame:
+def transform_data(input_data: pd.DataFrame, NORMALIZER, TRANSFORMER, X_test, df) -> pd.DataFrame:
     # Adicionar features calculadas
     current_year = pd.Timestamp.now().year
     input_data['age_years'] = current_year - input_data['year_model']
