@@ -14,9 +14,9 @@ class Car(BaseModel):
     city: str
     state: str
 
-
     @validator('brand')
     def validate_brand(cls, value):
         if value not in config.valid_brands:
-            raise ValueError(f'Invalid brand: {value}. Enter a brand present in the valid_brands.csv file')
+            raise ValueError(
+                f'Invalid brand: {value}. Enter a brand present in the valid_brands.csv file')
         return value

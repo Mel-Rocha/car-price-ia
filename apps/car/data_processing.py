@@ -7,10 +7,12 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-
-
-def transform_data(input_data: pd.DataFrame, NORMALIZER: StandardScaler,
-                   TRANSFORMER: OneHotEncoder, X_test: pd.DataFrame, df: pd.DataFrame) -> pd.DataFrame:
+def transform_data(
+        input_data: pd.DataFrame,
+        NORMALIZER: StandardScaler,
+        TRANSFORMER: OneHotEncoder,
+        X_test: pd.DataFrame,
+        df: pd.DataFrame) -> pd.DataFrame:
     # Adicionar features calculadas
     current_year = pd.Timestamp.now().year
     input_data['age_years'] = current_year - input_data['year_model']
@@ -28,11 +30,13 @@ def transform_data(input_data: pd.DataFrame, NORMALIZER: StandardScaler,
 
     # Calcular desvio de preço
     def calculate_price_deviation(row):
-        group = df[(df['model'] == row['model']) & (df['year_model'] == row['year_model'])]
+        group = df[(df['model'] == row['model']) & (
+            df['year_model'] == row['year_model'])]
         group_avg_price = group['price'].mean() if not group.empty else 0
         return group_avg_price - row['brand_avg_price']
 
-    input_data['price_deviation'] = input_data.apply(calculate_price_deviation, axis=1)
+    input_data['price_deviation'] = input_data.apply(
+        calculate_price_deviation, axis=1)
 
     # Identificar marcas de luxo
     input_data['is_luxury_brand'] = input_data['brand'].apply(
@@ -40,12 +44,27 @@ def transform_data(input_data: pd.DataFrame, NORMALIZER: StandardScaler,
     )
 
     # Separar colunas categóricas e numéricas
-    categorical_columns = ['brand', 'model', 'gear', 'fuel', 'bodywork', 'city', 'state']
-    numerical_columns = ['year_model', 'mileage', 'age_years', 'price_deviation',
-                         'brand_avg_price', 'state_avg_price', 'city_avg_price', 'is_luxury_brand']
+    categorical_columns = [
+        'brand',
+        'model',
+        'gear',
+        'fuel',
+        'bodywork',
+        'city',
+        'state']
+    numerical_columns = [
+        'year_model',
+        'mileage',
+        'age_years',
+        'price_deviation',
+        'brand_avg_price',
+        'state_avg_price',
+        'city_avg_price',
+        'is_luxury_brand']
 
     # Aplicar OneHotEncoder
-    encoded_categorical = TRANSFORMER.transform(input_data[categorical_columns])
+    encoded_categorical = TRANSFORMER.transform(
+        input_data[categorical_columns])
     encoded_categorical_df = pd.DataFrame(
         encoded_categorical,
         columns=TRANSFORMER.get_feature_names_out(categorical_columns),
@@ -61,7 +80,8 @@ def transform_data(input_data: pd.DataFrame, NORMALIZER: StandardScaler,
     )
 
     # Concatenar as colunas normalizadas e codificadas
-    final_input_df = pd.concat([normalized_numeric_df, encoded_categorical_df], axis=1)
+    final_input_df = pd.concat(
+        [normalized_numeric_df, encoded_categorical_df], axis=1)
 
     # Garantir consistência com o treinamento
     missing_columns = set(X_test.columns) - set(final_input_df.columns)

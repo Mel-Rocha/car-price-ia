@@ -19,4 +19,5 @@ class Config:
             for row in reader:
                 cls.valid_brands.add(row[0])
 
+
 config = Config()

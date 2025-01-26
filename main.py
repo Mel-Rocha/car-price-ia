@@ -41,7 +41,6 @@ def create_application() -> FastAPI:
     application.include_router(car_router.router, prefix="/car",
                                tags=['car'])
 
-
     return application
 
 
