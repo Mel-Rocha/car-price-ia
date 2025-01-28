@@ -1,11 +1,19 @@
+import logging
+
 import pandas as pd
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, HTTPException, Request, Query
 
 from apps.car.schemas import Car
 from apps.car.data_processing import transform_data
 
 
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 router = APIRouter()
+
+
+valid_brands = pd.read_csv('data/valid_brands.csv')
 
 
 @router.post("/predict", response_model=dict)
@@ -63,3 +71,45 @@ async def predict_car_price(request: Request, car: Car):
     except Exception as e:
         raise HTTPException(status_code=500,
                             detail=f"Erro ao fazer a previsão: {str(e)}")
+
+
+@router.get("/list/brands", response_model=dict)
+async def list_brands(page: int = Query(1, ge=1), page_size: int = Query(10, ge=1)):
+    """
+    Listagem páginada de marcas válidas.
+
+    Parâmetros:
+    - page: Número da página (default: 1).
+    - page_size: Tamanho da página (default: 10).
+
+    Retorna:
+    - JSON com a listagem das marcas, número da página, tamanho da página,
+      quantidade total de páginas e quantidade total de resultados.
+    """
+    try:
+        if valid_brands is None or valid_brands.empty:
+            raise HTTPException(status_code=500, detail="Brands data is not loaded or empty.")
+
+        # Obtendo o nome da primeira coluna
+        column_name = valid_brands.columns[0]
+
+        total_results = len(valid_brands)
+        total_pages = (total_results + page_size - 1) // page_size
+
+        if page > total_pages:
+            page = total_pages
+
+        start = (page - 1) * page_size
+        end = start + page_size
+        brands_list = valid_brands.iloc[start:end][column_name].tolist()
+
+        return {
+            "page": page,
+            "page_size": page_size,
+            "total_pages": total_pages,
+            "total_results": total_results,
+            "brands": brands_list
+        }
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error listing brands: {str(e)}")
