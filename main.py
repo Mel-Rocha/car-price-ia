@@ -62,4 +62,4 @@ async def startup_event():
     app.state.ORIGINAL_DF = pd.read_csv(ORIGINAL_DF_PATH)
     app.state.DATA_VALID = pd.read_csv('data/data_valid.csv')
 
-    config.load_valid_brands('data/valid_brands.csv')
+    config.load_valid_brands(app.state.DATA_VALID)

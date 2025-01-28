@@ -18,5 +18,5 @@ class Car(BaseModel):
     def validate_brand(cls, value):
         if value not in config.valid_brands:
             raise ValueError(
-                f'Invalid brand: {value}. Enter a brand present in the valid_brands.csv file')
+                f'Invalid brand: {value}. Enter a brand present in the data/data_valid.csv file')
         return value
