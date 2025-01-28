@@ -1,9 +1,14 @@
+import logging
+
 import pandas as pd
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, HTTPException, Request, Query
 
 from apps.car.schemas import Car
 from apps.car.data_processing import transform_data
 
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
@@ -63,3 +68,56 @@ async def predict_car_price(request: Request, car: Car):
     except Exception as e:
         raise HTTPException(status_code=500,
                             detail=f"Erro ao fazer a previsão: {str(e)}")
+
+
+@router.get("/list/{category}", response_model=dict)
+async def list_category(
+    request: Request, category: str, page: int = Query(
+        1, ge=1), page_size: int = Query(
+            10, ge=1)):
+    """
+    Objetivo:
+    - Listagem páginada de categorias válidas (brand, fuel, gear, bodywork).
+
+    Parâmetros Obrigatórios:
+    - category: Categoria a ser listada (brand, fuel, gear, bodywork).
+
+    Parâmetros Opcionais:
+    - page: Número da página (default: 1).
+    - page_size: Tamanho da página (default: 10).
+
+    Retorna:
+    - JSON com a listagem da categoria, número da página, tamanho da página,
+      quantidade total de páginas e quantidade total de resultados.
+    """
+    try:
+        data_valid = request.app.state.DATA_VALID
+
+        if category not in data_valid.columns:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Invalid category: {category}")
+
+        valid_values = data_valid[category].dropna().unique().tolist()
+
+        total_results = len(valid_values)
+        total_pages = (total_results + page_size - 1) // page_size
+
+        if page > total_pages:
+            page = total_pages
+
+        start = (page - 1) * page_size
+        end = start + page_size
+        values_list = valid_values[start:end]
+
+        return {
+            "page": page,
+            "page_size": page_size,
+            "total_pages": total_pages,
+            "total_results": total_results,
+            category: values_list
+        }
+
+    except Exception as e:
+        raise HTTPException(status_code=500,
+                            detail=f"Error listing {category}: {str(e)}")

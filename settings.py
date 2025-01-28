@@ -1,5 +1,6 @@
 import os
-import csv
+
+import pandas as pd
 
 
 TRANSFORMER_PATH = os.path.join('artifacts', 'onehotencoder.pkl')
@@ -13,11 +14,11 @@ class Config:
     valid_brands = set()
 
     @classmethod
-    def load_valid_brands(cls, file_path: str):
-        with open(file_path, newline='') as csvfile:
-            reader = csv.reader(csvfile)
-            for row in reader:
-                cls.valid_brands.add(row[0])
+    def load_valid_brands(cls, data_valid: pd.DataFrame):
+        """
+        Popula o set valid_brands com as marcas únicas do DataFrame carregado.
+        """
+        cls.valid_brands = set(data_valid['brand'].dropna().unique())
 
 
 config = Config()
