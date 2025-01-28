@@ -13,9 +13,6 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
-data_valid = pd.read_csv('data/data_valid.csv')
-
-
 @router.post("/predict", response_model=dict)
 async def predict_car_price(request: Request, car: Car):
     """
@@ -75,7 +72,7 @@ async def predict_car_price(request: Request, car: Car):
 
 
 @router.get("/list/{category}", response_model=dict)
-async def list_category(category: str, page: int = Query(1, ge=1), page_size: int = Query(10, ge=1)):
+async def list_category(request: Request, category: str, page: int = Query(1, ge=1), page_size: int = Query(10, ge=1)):
     """
     Objetivo:
     - Listagem páginada de categorias válidas (brand, fuel, gear, bodywork).
@@ -92,11 +89,11 @@ async def list_category(category: str, page: int = Query(1, ge=1), page_size: in
       quantidade total de páginas e quantidade total de resultados.
     """
     try:
-        # Verificar se a categoria existe no CSV
+        data_valid = request.app.state.DATA_VALID
+
         if category not in data_valid.columns:
             raise HTTPException(status_code=400, detail=f"Invalid category: {category}")
 
-        # Obter os valores válidos para a categoria
         valid_values = data_valid[category].dropna().unique().tolist()
 
         total_results = len(valid_values)
