@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
-valid_brands = pd.read_csv('data/valid_brands.csv')
+data_valid = pd.read_csv('data/data_valid.csv')
 
 
 @router.post("/predict", response_model=dict)
@@ -73,27 +73,33 @@ async def predict_car_price(request: Request, car: Car):
                             detail=f"Erro ao fazer a previsão: {str(e)}")
 
 
-@router.get("/list/brands", response_model=dict)
-async def list_brands(page: int = Query(1, ge=1), page_size: int = Query(10, ge=1)):
-    """
-    Listagem páginada de marcas válidas.
 
-    Parâmetros:
+@router.get("/list/{category}", response_model=dict)
+async def list_category(category: str, page: int = Query(1, ge=1), page_size: int = Query(10, ge=1)):
+    """
+    Objetivo:
+    - Listagem páginada de categorias válidas (brand, fuel, gear, bodywork).
+
+    Parâmetros Obrigatórios:
+    - category: Categoria a ser listada (brand, fuel, gear, bodywork).
+
+    Parâmetros Opcionais:
     - page: Número da página (default: 1).
     - page_size: Tamanho da página (default: 10).
 
     Retorna:
-    - JSON com a listagem das marcas, número da página, tamanho da página,
+    - JSON com a listagem da categoria, número da página, tamanho da página,
       quantidade total de páginas e quantidade total de resultados.
     """
     try:
-        if valid_brands is None or valid_brands.empty:
-            raise HTTPException(status_code=500, detail="Brands data is not loaded or empty.")
+        # Verificar se a categoria existe no CSV
+        if category not in data_valid.columns:
+            raise HTTPException(status_code=400, detail=f"Invalid category: {category}")
 
-        # Obtendo o nome da primeira coluna
-        column_name = valid_brands.columns[0]
+        # Obter os valores válidos para a categoria
+        valid_values = data_valid[category].dropna().unique().tolist()
 
-        total_results = len(valid_brands)
+        total_results = len(valid_values)
         total_pages = (total_results + page_size - 1) // page_size
 
         if page > total_pages:
@@ -101,15 +107,15 @@ async def list_brands(page: int = Query(1, ge=1), page_size: int = Query(10, ge=
 
         start = (page - 1) * page_size
         end = start + page_size
-        brands_list = valid_brands.iloc[start:end][column_name].tolist()
+        values_list = valid_values[start:end]
 
         return {
             "page": page,
             "page_size": page_size,
             "total_pages": total_pages,
             "total_results": total_results,
-            "brands": brands_list
+            category: values_list
         }
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error listing brands: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error listing {category}: {str(e)}")
