@@ -20,4 +20,5 @@ class Config:
         """
         cls.valid_brands = set(data_valid['brand'].dropna().unique())
 
+
 config = Config()

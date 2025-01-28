@@ -70,9 +70,11 @@ async def predict_car_price(request: Request, car: Car):
                             detail=f"Erro ao fazer a previsão: {str(e)}")
 
 
-
 @router.get("/list/{category}", response_model=dict)
-async def list_category(request: Request, category: str, page: int = Query(1, ge=1), page_size: int = Query(10, ge=1)):
+async def list_category(
+    request: Request, category: str, page: int = Query(
+        1, ge=1), page_size: int = Query(
+            10, ge=1)):
     """
     Objetivo:
     - Listagem páginada de categorias válidas (brand, fuel, gear, bodywork).
@@ -92,7 +94,9 @@ async def list_category(request: Request, category: str, page: int = Query(1, ge
         data_valid = request.app.state.DATA_VALID
 
         if category not in data_valid.columns:
-            raise HTTPException(status_code=400, detail=f"Invalid category: {category}")
+            raise HTTPException(
+                status_code=400,
+                detail=f"Invalid category: {category}")
 
         valid_values = data_valid[category].dropna().unique().tolist()
 
@@ -115,4 +119,5 @@ async def list_category(request: Request, category: str, page: int = Query(1, ge
         }
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error listing {category}: {str(e)}")
+        raise HTTPException(status_code=500,
+                            detail=f"Error listing {category}: {str(e)}")
