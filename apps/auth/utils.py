@@ -12,4 +12,7 @@ def generate_auth_token():
         "timestamp": str(datetime.now().timestamp()),
         "secret_key": SECRET_KEY
     }
-    return hashlib.sha256(json.dumps(data, sort_keys=True).encode()).hexdigest()
+    return hashlib.sha256(
+        json.dumps(
+            data,
+            sort_keys=True).encode()).hexdigest()
