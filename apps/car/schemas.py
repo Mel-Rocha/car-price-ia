@@ -20,3 +20,13 @@ class Car(BaseModel):
             raise ValueError(
                 f'Invalid brand: {value}. Enter a brand present in the data/data_valid.csv file')
         return value
+
+
+
+class BrandPredict(BaseModel):
+    mileage: int
+    gear: str
+    fuel: str
+    bodywork: str
+    city: str
+    state: str

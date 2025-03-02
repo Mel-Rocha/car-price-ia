@@ -1,9 +1,11 @@
 import logging
+import traceback
+from datetime import datetime
 
 import pandas as pd
-from fastapi import APIRouter, HTTPException, Request, Query
+from fastapi import APIRouter, HTTPException, Request, Query, Path
 
-from apps.car.schemas import Car
+from apps.car.schemas import Car, BrandPredict
 from apps.car.data_processing import transform_data
 
 
@@ -121,3 +123,52 @@ async def list_category(
     except Exception as e:
         raise HTTPException(status_code=500,
                             detail=f"Error listing {category}: {str(e)}")
+
+
+@router.post("/brand_predict/{brand}", response_model=dict)
+async def brand_predict(request: Request, params: BrandPredict, brand: str = Path(..., description="Brand name")):
+    try:
+        brand = brand.upper()
+        df_brands = request.app.state.BRAND_MODELS
+        brand_data = df_brands[df_brands["brand"] == brand]
+
+        if brand_data.empty:
+            raise HTTPException(status_code=404, detail="Brand not found")
+
+        models = brand_data["models"].values[0]  # Lista real de modelos
+
+        # Obter objetos globais
+        MODEL = request.app.state.MODEL
+        NORMALIZER = request.app.state.NORMALIZER
+        TRANSFORMER = request.app.state.TRANSFORMER
+        X_test = request.app.state.X_test
+        df = request.app.state.ORIGINAL_DF
+
+        next_year = datetime.now().year + 1
+        predictions = []
+
+        for model in models:
+            input_data = pd.DataFrame({
+                'brand': [brand],
+                'model': [model],
+                'year_model': [next_year],
+                'mileage': [params.mileage],
+                'gear': [params.gear],
+                'fuel': [params.fuel],
+                'bodywork': [params.bodywork],
+                'city': [params.city],
+                'state': [params.state]
+            })
+
+            # Transformação dos dados
+            transformed_data = transform_data(input_data, NORMALIZER, TRANSFORMER, X_test, df)
+            predicted_price = MODEL.predict(transformed_data)[0]
+            formatted_price = f"{int(predicted_price):,}".replace(",", ".")  # Estilo monetário
+
+            predictions.append({"model": model, "predicted_value": formatted_price})
+
+        return {"brand": brand, "year_model": next_year, "predictions": predictions}
+
+    except Exception as e:
+        tb_str = traceback.format_exception(etype=type(e), value=e, tb=e.__traceback__)
+        raise HTTPException(status_code=500, detail=f"Erro ao fazer a previsão: {str(e)}\n{''.join(tb_str)}")
