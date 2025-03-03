@@ -127,15 +127,25 @@ async def list_category(
 
 @router.post("/brand_predict/{brand}", response_model=dict)
 async def brand_predict(request: Request, params: BrandPredict, brand: str = Path(..., description="Brand name")):
+    """
+    Objective:
+    - Predict the `year_model` of the next year for all models of the brand.
+
+    Parameters:
+    - brand: Brand name (required in URL).
+    - params: Common parameters for all models of the brand (JSON).
+
+    Returns:
+    - JSON with the predictions for all models of the brand.
+    """
     try:
         brand = brand.upper()
         df_brands = request.app.state.BRAND_MODELS
-        brand_data = df_brands[df_brands["brand"] == brand]
 
-        if brand_data.empty:
+        if brand not in df_brands.columns:
             raise HTTPException(status_code=404, detail="Brand not found")
 
-        models = brand_data["models"].values[0]  # Lista real de modelos
+        models = df_brands[brand].dropna().tolist()  # Get the list of models for the brand
 
         # Obter objetos globais
         MODEL = request.app.state.MODEL
