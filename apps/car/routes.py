@@ -131,11 +131,11 @@ async def brand_predict(request: Request, params: BrandPredict, brand: str = Pat
         df_brands = request.app.state.BRAND_MODELS
 
         if brand not in df_brands.columns:
-            raise HTTPException(status_code=404, detail="Brand not found")
+            raise HTTPException(status_code=400, detail="Marca inválida")
 
         models = df_brands[brand].dropna().tolist()  # Get the list of models for the brand
 
-        # Obter objetos globais
+        # Obter objetos globaison
         MODEL = request.app.state.MODEL
         NORMALIZER = request.app.state.NORMALIZER
         TRANSFORMER = request.app.state.TRANSFORMER
@@ -167,6 +167,8 @@ async def brand_predict(request: Request, params: BrandPredict, brand: str = Pat
 
         return {"brand": brand, "year_model": next_year, "predictions": predictions}
 
+    except HTTPException as e:
+        raise e
     except Exception as e:
         tb_str = traceback.format_exception(etype=type(e), value=e, tb=e.__traceback__)
         raise HTTPException(status_code=500, detail=f"Erro ao fazer a previsão: {str(e)}\n{''.join(tb_str)}")
