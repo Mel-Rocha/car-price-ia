@@ -22,7 +22,6 @@ class Car(BaseModel):
         return value
 
 
-
 class BrandPredict(BaseModel):
     mileage: int
     gear: str

@@ -5,9 +5,9 @@ from datetime import datetime
 import pandas as pd
 from fastapi import APIRouter, HTTPException, Request, Query, Path
 
+from apps.car.utils import format_price
 from apps.car.schemas import Car, BrandPredict
 from apps.car.data_processing import transform_data
-from apps.car.utils import format_price
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -52,7 +52,8 @@ async def predict_car_price(request: Request, car: Car):
         # Fazer a previsão
         predicted_price = MODEL.predict(transformed_data)[0]
 
-        formatted_prediction = format_price(predicted_price)  # Use the utility function
+        formatted_prediction = format_price(
+            predicted_price)  # Use the utility function
         return {"predict": formatted_prediction}
 
     except Exception as e:
@@ -114,7 +115,10 @@ async def list_category(
 
 
 @router.post("/brand_predict/{brand}", response_model=dict)
-async def brand_predict(request: Request, params: BrandPredict, brand: str = Path(..., description="Brand name")):
+async def brand_predict(request: Request,
+                        params: BrandPredict,
+                        brand: str = Path(...,
+                                          description="Brand name")):
     """
     Objective:
     - Predict the `year_model` of the next year for all models of the brand.
@@ -133,7 +137,8 @@ async def brand_predict(request: Request, params: BrandPredict, brand: str = Pat
         if brand not in df_brands.columns:
             raise HTTPException(status_code=400, detail="Marca inválida")
 
-        models = df_brands[brand].dropna().tolist()  # Get the list of models for the brand
+        # Get the list of models for the brand
+        models = df_brands[brand].dropna().tolist()
 
         # Obter objetos globaison
         MODEL = request.app.state.MODEL
@@ -159,16 +164,25 @@ async def brand_predict(request: Request, params: BrandPredict, brand: str = Pat
             })
 
             # Transformação dos dados
-            transformed_data = transform_data(input_data, NORMALIZER, TRANSFORMER, X_test, df)
+            transformed_data = transform_data(
+                input_data, NORMALIZER, TRANSFORMER, X_test, df)
             predicted_price = MODEL.predict(transformed_data)[0]
-            formatted_price = format_price(predicted_price)  # Use the utility function
+            formatted_price = format_price(
+                predicted_price)  # Use the utility function
 
-            predictions.append({"model": model, "predicted_value": formatted_price})
+            predictions.append(
+                {"model": model, "predicted_value": formatted_price})
 
-        return {"brand": brand, "year_model": next_year, "predictions": predictions}
+        return {
+            "brand": brand,
+            "year_model": next_year,
+            "predictions": predictions}
 
     except HTTPException as e:
         raise e
     except Exception as e:
-        tb_str = traceback.format_exception(etype=type(e), value=e, tb=e.__traceback__)
-        raise HTTPException(status_code=500, detail=f"Erro ao fazer a previsão: {str(e)}\n{''.join(tb_str)}")
+        tb_str = traceback.format_exception(
+            etype=type(e), value=e, tb=e.__traceback__)
+        raise HTTPException(
+            status_code=500,
+            detail=f"Erro ao fazer a previsão: {str(e)}\n{''.join(tb_str)}")
