@@ -118,17 +118,17 @@ async def list_category(
 async def brand_predict(request: Request,
                         params: BrandPredict,
                         brand: str = Path(...,
-                                          description="Brand name")):
+                                          description="Brand")):
     """
-    Objective:
-    - Predict the `year_model` of the next year for all models of the brand.
+    Objetivo:
+    - Prever o preço de todos os modelos de uma marca para o próximo ano modelo.
 
-    Parameters:
-    - brand: Brand name (required in URL).
-    - params: Common parameters for all models of the brand (JSON).
+    Parâmetros:
+    - brand: marca (obrigatório na URL).
+    - params: Parâmetros comuns para todos os modelos da marca (JSON).
 
-    Returns:
-    - JSON with the predictions for all models of the brand.
+    Retorna:
+    - JSON com as previsões para todos os modelos da marca.
     """
     try:
         brand = brand.upper()
@@ -181,8 +181,7 @@ async def brand_predict(request: Request,
     except HTTPException as e:
         raise e
     except Exception as e:
-        tb_str = traceback.format_exception(
-            etype=type(e), value=e, tb=e.__traceback__)
+        tb_str = traceback.format_exception(type(e), e, e.__traceback__)
         raise HTTPException(
             status_code=500,
             detail=f"Erro ao fazer a previsão: {str(e)}\n{''.join(tb_str)}")
