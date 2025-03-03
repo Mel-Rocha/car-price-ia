@@ -7,7 +7,7 @@ from fastapi import APIRouter, HTTPException, Request, Query, Path
 
 from apps.car.schemas import Car, BrandPredict
 from apps.car.data_processing import transform_data
-
+from apps.car.utils import format_price
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -52,19 +52,7 @@ async def predict_car_price(request: Request, car: Car):
         # Fazer a previsão
         predicted_price = MODEL.predict(transformed_data)[0]
 
-        # Formatar o valor em estilo monetário brasileiro
-        # Converte para string e remove decimais
-        formatted_prediction = str(int(predicted_price))
-
-        if len(
-                formatted_prediction) == 7:  # Caso o número tenha 7 dígitos (2 antes do ponto)
-            formatted_prediction = formatted_prediction[:2] + "." + \
-                formatted_prediction[2:5] + "," + formatted_prediction[5:]
-        elif len(formatted_prediction) == 8:  # Caso o número tenha 8 dígitos (3 antes do ponto)
-            formatted_prediction = formatted_prediction[:3] + "." + \
-                formatted_prediction[3:6] + "," + formatted_prediction[6:]
-        else:
-            formatted_prediction = formatted_prediction
+        formatted_prediction = format_price(predicted_price)  # Use the utility function
         return {"predict": formatted_prediction}
 
     except Exception as e:
@@ -173,7 +161,7 @@ async def brand_predict(request: Request, params: BrandPredict, brand: str = Pat
             # Transformação dos dados
             transformed_data = transform_data(input_data, NORMALIZER, TRANSFORMER, X_test, df)
             predicted_price = MODEL.predict(transformed_data)[0]
-            formatted_price = f"{int(predicted_price):,}".replace(",", ".")  # Estilo monetário
+            formatted_price = format_price(predicted_price)  # Use the utility function
 
             predictions.append({"model": model, "predicted_value": formatted_price})
 
