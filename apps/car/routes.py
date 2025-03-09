@@ -8,6 +8,7 @@ from fastapi import APIRouter, HTTPException, Request, Query, Path
 from apps.car.utils import format_price
 from apps.car.schemas import Car, BrandPredict
 from apps.car.data_processing import transform_data
+from apps.car.exceptions import InvalidCategoryException
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -81,6 +82,8 @@ async def list_category(
     - JSON com a listagem da categoria, número da página, tamanho da página,
       quantidade total de páginas e quantidade total de resultados.
     """
+    if category not in InvalidCategoryException.VALID_CATEGORIES:
+        raise InvalidCategoryException(category)
     try:
         data_valid = request.app.state.DATA_VALID
 
