@@ -5,8 +5,8 @@ from datetime import datetime
 import pandas as pd
 from fastapi import APIRouter, HTTPException, Request, Query, Path
 
+from apps.car.schemas import Car
 from apps.car.utils import format_price
-from apps.car.schemas import Car, BrandPredict
 from apps.car.data_processing import transform_data
 from apps.car.exceptions import InvalidCategoryException
 
@@ -19,22 +19,22 @@ router = APIRouter()
 @router.post("/predict", response_model=dict)
 async def predict_car_price(request: Request, car: Car):
     """
-        Objetivo:
-        - prever o preço de um carro.
+    Objetivo:
+    - Permitir que o usuário obtenha a previsão de preço de um veículo específico,
+      utilizando a combinação de características que desejar.
 
-        Descrição:
-        - Este endpoint recebe os dados de um carro, transforma esses dados usando
-        normalização e codificação, e então usa um modelo treinado para prever o
-        preço do carro. O preço previsto é formatado no estilo monetário brasileiro.
+    Descrição:
+    - Essa funcionalidade possibilita previsões para veículos que podem não estar presentes
+      em nosso histórico de dados.
 
-        Parâmetros:
-        Obrigatórios:
-        - request: Objeto de requisição do FastAPI.
-        - car: Objeto do tipo Car contendo os dados do carro.
+    Parâmetros:
+    Obrigatórios:
+    - request: Objeto de requisição do FastAPI.
+    - car: Objeto do tipo Car contendo os dados do carro.
 
-        Retorna:
-        - JSON, Um dicionário com a previsão do preço do carro formatado.
-        - Em caso de erro, retorna uma mensagem de erro com status code 500.
+    Retorna:
+    - JSON, Um dicionário com a previsão do preço do carro formatado.
+    - Em caso de erro, retorna uma mensagem de erro com status code 500.
     """
     try:
         # Converter o input para DataFrame
@@ -119,19 +119,22 @@ async def list_category(
 
 @router.post("/brand_predict/{brand}", response_model=dict)
 async def brand_predict(request: Request,
-                        params: BrandPredict,
                         brand: str = Path(...,
                                           description="Brand")):
     """
     Objetivo:
-    - Prever o preço de todos os modelos de uma marca para o próximo ano modelo.
+    - Prever o preço de todos os modelos de uma determinada marca para o próximo ano modelo.
+
+    Descrição:
+    - Utilizamos como entrada a **combinação de características mais frequente** para cada modelo,
+      garantindo que as previsões sejam baseadas em dados historicamente representativos.
 
     Parâmetros:
-    - brand: marca (obrigatório na URL).
-    - params: Parâmetros comuns para todos os modelos da marca (JSON).
+    - brand (str): Nome da marca (obrigatório na URL).
 
     Retorna:
-    - JSON com as previsões para todos os modelos da marca.
+    - JSON contendo as previsões de preço para todos os modelos da marca,
+      considerando os dados de entrada mais comuns no histórico do dataset.
     """
     try:
         brand = brand.upper()
@@ -143,43 +146,61 @@ async def brand_predict(request: Request,
         # Get the list of models for the brand
         models = df_brands[brand].dropna().tolist()
 
-        # Obter objetos globaison
+        # Objetos globais do modelo
         MODEL = request.app.state.MODEL
         NORMALIZER = request.app.state.NORMALIZER
         TRANSFORMER = request.app.state.TRANSFORMER
         X_test = request.app.state.X_test
-        df = request.app.state.ORIGINAL_DF
+        df = request.app.state.ORIGINAL_DF  # Dados originais do treinamento
 
         next_year = datetime.now().year + 1
         predictions = []
 
         for model in models:
+            # Filtrar apenas os registros da marca e modelo
+            valid_combinations = df[(df["brand"] == brand)
+                                    & (df["model"] == model)]
+
+            if valid_combinations.empty:
+                continue  # Se não há registros, pula para o próximo modelo
+
+            # Escolher a combinação mais frequente
+            most_frequent_combination = valid_combinations.mode().iloc[0]
+
             input_data = pd.DataFrame({
                 'brand': [brand],
                 'model': [model],
                 'year_model': [next_year],
-                'mileage': [params.mileage],
-                'gear': [params.gear],
-                'fuel': [params.fuel],
-                'bodywork': [params.bodywork],
-                'city': [params.city],
-                'state': [params.state]
+                'mileage': [most_frequent_combination["mileage"]],
+                'gear': [most_frequent_combination["gear"]],
+                'fuel': [most_frequent_combination["fuel"]],
+                'bodywork': [most_frequent_combination["bodywork"]],
+                'city': [most_frequent_combination["city"]],
+                'state': [most_frequent_combination["state"]]
             })
 
             # Transformação dos dados
             transformed_data = transform_data(
                 input_data, NORMALIZER, TRANSFORMER, X_test, df)
             predicted_price = MODEL.predict(transformed_data)[0]
-            formatted_price = format_price(
-                predicted_price)  # Use the utility function
+            formatted_price = format_price(predicted_price)
 
-            predictions.append(
-                {"model": model, "predicted_value": formatted_price})
+            predictions.append({
+                "model": model,
+                "mileage": most_frequent_combination["mileage"],
+                "gear": most_frequent_combination["gear"],
+                "fuel": most_frequent_combination["fuel"],
+                "bodywork": most_frequent_combination["bodywork"],
+                "city": most_frequent_combination["city"],
+                "state": most_frequent_combination["state"],
+                "predicted_value": formatted_price
+            })
 
         return {
             "brand": brand,
             "year_model": next_year,
-            "predictions": predictions}
+            "predictions": predictions
+        }
 
     except HTTPException as e:
         raise e
