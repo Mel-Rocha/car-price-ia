@@ -19,22 +19,22 @@ router = APIRouter()
 @router.post("/predict", response_model=dict)
 async def predict_car_price(request: Request, car: Car):
     """
-        Objetivo:
-        - prever o preço de um carro.
+    Objetivo:
+    - Permitir que o usuário obtenha a previsão de preço de um veículo específico,
+      utilizando a combinação de características que desejar.
 
-        Descrição:
-        - Este endpoint recebe os dados de um carro, transforma esses dados usando
-        normalização e codificação, e então usa um modelo treinado para prever o
-        preço do carro. O preço previsto é formatado no estilo monetário brasileiro.
+    Descrição:
+    - Essa funcionalidade possibilita previsões para veículos que podem não estar presentes
+      em nosso histórico de dados.
 
-        Parâmetros:
-        Obrigatórios:
-        - request: Objeto de requisição do FastAPI.
-        - car: Objeto do tipo Car contendo os dados do carro.
+    Parâmetros:
+    Obrigatórios:
+    - request: Objeto de requisição do FastAPI.
+    - car: Objeto do tipo Car contendo os dados do carro.
 
-        Retorna:
-        - JSON, Um dicionário com a previsão do preço do carro formatado.
-        - Em caso de erro, retorna uma mensagem de erro com status code 500.
+    Retorna:
+    - JSON, Um dicionário com a previsão do preço do carro formatado.
+    - Em caso de erro, retorna uma mensagem de erro com status code 500.
     """
     try:
         # Converter o input para DataFrame
@@ -123,13 +123,18 @@ async def brand_predict(request: Request,
                                           description="Brand")):
     """
     Objetivo:
-    - Prever o preço de todos os modelos de uma marca para o próximo ano modelo.
+    - Prever o preço de todos os modelos de uma determinada marca para o próximo ano modelo.
+
+    Descrição:
+    - Utilizamos como entrada a **combinação de características mais frequente** para cada modelo,
+      garantindo que as previsões sejam baseadas em dados historicamente representativos.
 
     Parâmetros:
-    - brand: marca (obrigatório na URL).
+    - brand (str): Nome da marca (obrigatório na URL).
 
     Retorna:
-    - JSON com as previsões para todos os modelos da marca.
+    - JSON contendo as previsões de preço para todos os modelos da marca,
+      considerando os dados de entrada mais comuns no histórico do dataset.
     """
     try:
         brand = brand.upper()
