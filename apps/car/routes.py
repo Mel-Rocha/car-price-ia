@@ -119,7 +119,6 @@ async def list_category(
 
 @router.post("/brand_predict/{brand}", response_model=dict)
 async def brand_predict(request: Request,
-                        params: BrandPredict,
                         brand: str = Path(...,
                                           description="Brand")):
     """
@@ -143,43 +142,59 @@ async def brand_predict(request: Request,
         # Get the list of models for the brand
         models = df_brands[brand].dropna().tolist()
 
-        # Obter objetos globaison
+        # Objetos globais do modelo
         MODEL = request.app.state.MODEL
         NORMALIZER = request.app.state.NORMALIZER
         TRANSFORMER = request.app.state.TRANSFORMER
         X_test = request.app.state.X_test
-        df = request.app.state.ORIGINAL_DF
+        df = request.app.state.ORIGINAL_DF  # Dados originais do treinamento
 
         next_year = datetime.now().year + 1
         predictions = []
 
         for model in models:
-            input_data = pd.DataFrame({
-                'brand': [brand],
-                'model': [model],
-                'year_model': [next_year],
-                'mileage': [params.mileage],
-                'gear': [params.gear],
-                'fuel': [params.fuel],
-                'bodywork': [params.bodywork],
-                'city': [params.city],
-                'state': [params.state]
-            })
+            # Filtrar o dataset para pegar apenas as combinações válidas desse modelo e marca
+            valid_combinations = df[(df["brand"] == brand) & (df["model"] == model)]
 
-            # Transformação dos dados
-            transformed_data = transform_data(
-                input_data, NORMALIZER, TRANSFORMER, X_test, df)
-            predicted_price = MODEL.predict(transformed_data)[0]
-            formatted_price = format_price(
-                predicted_price)  # Use the utility function
+            if valid_combinations.empty:
+                continue  # Pula para o próximo modelo se não houver combinações válidas
 
-            predictions.append(
-                {"model": model, "predicted_value": formatted_price})
+            # Para cada combinação válida, gerar a previsão
+            for _, row in valid_combinations.iterrows():
+                input_data = pd.DataFrame({
+                    'brand': [brand],
+                    'model': [model],
+                    'year_model': [next_year],
+                    'mileage': [row["mileage"]],
+                    'gear': [row["gear"]],
+                    'fuel': [row["fuel"]],
+                    'bodywork': [row["bodywork"]],
+                    'city': [row["city"]],
+                    'state': [row["state"]]
+                })
+
+                # Transformação dos dados
+                transformed_data = transform_data(
+                    input_data, NORMALIZER, TRANSFORMER, X_test, df)
+                predicted_price = MODEL.predict(transformed_data)[0]
+                formatted_price = format_price(predicted_price)
+
+                predictions.append({
+                    "model": model,
+                    "mileage": row["mileage"],
+                    "gear": row["gear"],
+                    "fuel": row["fuel"],
+                    "bodywork": row["bodywork"],
+                    "city": row["city"],
+                    "state": row["state"],
+                    "predicted_value": formatted_price
+                })
 
         return {
             "brand": brand,
             "year_model": next_year,
-            "predictions": predictions}
+            "predictions": predictions
+        }
 
     except HTTPException as e:
         raise e
