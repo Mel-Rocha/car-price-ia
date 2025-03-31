@@ -153,42 +153,43 @@ async def brand_predict(request: Request,
         predictions = []
 
         for model in models:
-            # Filtrar o dataset para pegar apenas as combinações válidas desse modelo e marca
+            # Filtrar apenas os registros da marca e modelo
             valid_combinations = df[(df["brand"] == brand) & (df["model"] == model)]
 
             if valid_combinations.empty:
-                continue  # Pula para o próximo modelo se não houver combinações válidas
+                continue  # Se não há registros, pula para o próximo modelo
 
-            # Para cada combinação válida, gerar a previsão
-            for _, row in valid_combinations.iterrows():
-                input_data = pd.DataFrame({
-                    'brand': [brand],
-                    'model': [model],
-                    'year_model': [next_year],
-                    'mileage': [row["mileage"]],
-                    'gear': [row["gear"]],
-                    'fuel': [row["fuel"]],
-                    'bodywork': [row["bodywork"]],
-                    'city': [row["city"]],
-                    'state': [row["state"]]
-                })
+            # Escolher a combinação mais frequente
+            most_frequent_combination = valid_combinations.mode().iloc[0]
 
-                # Transformação dos dados
-                transformed_data = transform_data(
-                    input_data, NORMALIZER, TRANSFORMER, X_test, df)
-                predicted_price = MODEL.predict(transformed_data)[0]
-                formatted_price = format_price(predicted_price)
+            input_data = pd.DataFrame({
+                'brand': [brand],
+                'model': [model],
+                'year_model': [next_year],
+                'mileage': [most_frequent_combination["mileage"]],
+                'gear': [most_frequent_combination["gear"]],
+                'fuel': [most_frequent_combination["fuel"]],
+                'bodywork': [most_frequent_combination["bodywork"]],
+                'city': [most_frequent_combination["city"]],
+                'state': [most_frequent_combination["state"]]
+            })
 
-                predictions.append({
-                    "model": model,
-                    "mileage": row["mileage"],
-                    "gear": row["gear"],
-                    "fuel": row["fuel"],
-                    "bodywork": row["bodywork"],
-                    "city": row["city"],
-                    "state": row["state"],
-                    "predicted_value": formatted_price
-                })
+            # Transformação dos dados
+            transformed_data = transform_data(
+                input_data, NORMALIZER, TRANSFORMER, X_test, df)
+            predicted_price = MODEL.predict(transformed_data)[0]
+            formatted_price = format_price(predicted_price)
+
+            predictions.append({
+                "model": model,
+                "mileage": most_frequent_combination["mileage"],
+                "gear": most_frequent_combination["gear"],
+                "fuel": most_frequent_combination["fuel"],
+                "bodywork": most_frequent_combination["bodywork"],
+                "city": most_frequent_combination["city"],
+                "state": most_frequent_combination["state"],
+                "predicted_value": formatted_price
+            })
 
         return {
             "brand": brand,
