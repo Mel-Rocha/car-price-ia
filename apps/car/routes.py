@@ -5,8 +5,8 @@ from datetime import datetime
 import pandas as pd
 from fastapi import APIRouter, HTTPException, Request, Query, Path
 
+from apps.car.schemas import Car
 from apps.car.utils import format_price
-from apps.car.schemas import Car, BrandPredict
 from apps.car.data_processing import transform_data
 from apps.car.exceptions import InvalidCategoryException
 
@@ -127,7 +127,6 @@ async def brand_predict(request: Request,
 
     Parâmetros:
     - brand: marca (obrigatório na URL).
-    - params: Parâmetros comuns para todos os modelos da marca (JSON).
 
     Retorna:
     - JSON com as previsões para todos os modelos da marca.
@@ -154,7 +153,8 @@ async def brand_predict(request: Request,
 
         for model in models:
             # Filtrar apenas os registros da marca e modelo
-            valid_combinations = df[(df["brand"] == brand) & (df["model"] == model)]
+            valid_combinations = df[(df["brand"] == brand)
+                                    & (df["model"] == model)]
 
             if valid_combinations.empty:
                 continue  # Se não há registros, pula para o próximo modelo
