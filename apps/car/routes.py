@@ -158,6 +158,46 @@ async def list_brands_or_models(
         raise HTTPException(status_code=500, detail=f"Erro ao listar: {str(e)}")
 
 
+@router.get("/list-states", response_model=dict)
+async def list_states_or_cities(
+    request: Request,
+    state: str = Query(None, description="Nome do estado (opcional)")
+):
+    """
+    Lista todos os estados ou as cidades de um estado específico.
+
+    Parâmetros:
+    - state (str): Nome do estado (opcional).
+
+    Retorna:
+    - JSON com a lista de estados ou cidades.
+    """
+    try:
+        # Carregar o DataFrame de estados e cidades
+        df_states = request.app.state.STATE_CITIES
+
+        if state:
+            # Normalizar a entrada do estado
+            state = state.strip().upper()
+
+            # Verificar se o estado existe no DataFrame
+            if state not in df_states.columns:
+                raise HTTPException(status_code=400, detail="Estado inválido")
+
+            # Listar as cidades do estado
+            cities = df_states[state].dropna().tolist()
+            return {"state": state, "cities": cities}
+
+        # Listar todos os estados
+        states = df_states.columns.tolist()
+        return {"states": states}
+
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erro ao listar: {str(e)}")
+
+
 @router.post("/brand_predict/{brand}", response_model=dict)
 async def brand_predict(request: Request,
                         brand: str = Path(...,
