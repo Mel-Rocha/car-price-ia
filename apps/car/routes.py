@@ -163,10 +163,10 @@ async def list_category(
             10, ge=1)):
     """
     Objetivo:
-    - Listagem páginada de categorias válidas (fuel, gear, bodywork).
+    - Listagem páginada de categorias válidas (fuel, gear).
 
     Parâmetros Obrigatórios:
-    - category: Categoria a ser listada  (fuel, gear, bodywork).
+    - category: Categoria a ser listada  (fuel, gear).
 
     Parâmetros Opcionais:
     - page: Número da página (default: 1).
@@ -212,45 +212,51 @@ async def list_category(
 
 
 @router.get("/list-brands", response_model=dict)
-async def list_brands_or_models(
+async def list_brands_models_bodyworks(
     request: Request,
-    brand: str = Query(None, description="Nome da marca (opcional)")
+    brand: str = Query(None, description="Brand name (optional)"),
+    model: str = Query(None, description="Model name (optional)")
 ):
     """
-    Lista todas as marcas ou os modelos de uma marca específica.
+    Lists all brands, models of a brand, or bodyworks of a model.
 
-    Parâmetros:
-    - brand (str): Nome da marca (opcional).
+    Parameters:
+    - brand (str): Brand name (optional).
+    - model (str): Model name (optional).
 
-    Retorna:
-    - JSON com a lista de marcas ou modelos.
+    Returns:
+    - JSON with the list of brands, models, or bodyworks.
     """
     try:
-        # Carregar o DataFrame de marcas e modelos
-        df_brands = request.app.state.BRAND_MODELS
+        # Access the BRAND_MODELS_BODYWORK data
+        brand_models_bodywork = request.app.state.BRAND_MODELS_BODYWORK
 
-        if brand:
-            # Normalizar a entrada da marca
-            brand = brand.strip().upper()
+        if not brand:
+            # List all brands
+            return {"brands": list(brand_models_bodywork.keys())}
 
-            # Verificar se a marca existe no DataFrame
-            if brand not in df_brands.columns:
-                raise HTTPException(status_code=400, detail="Marca inválida")
+        brand = brand.strip().upper()
+        if brand not in brand_models_bodywork:
+            raise HTTPException(status_code=400, detail="Invalid brand")
 
-            # Listar os modelos da marca
-            models = df_brands[brand].dropna().tolist()
-            return {"brand": brand, "models": models}
+        if not model:
+            # List all models of the brand
+            return {"brand": brand, "models": list(brand_models_bodywork[brand].keys())}
 
-        # Listar todas as marcas
-        brands = df_brands.columns.tolist()
-        return {"brands": brands}
+        model = model.strip().upper()
+        if model not in brand_models_bodywork[brand]:
+            raise HTTPException(status_code=400, detail="Invalid model for the specified brand")
+
+        # List all bodyworks of the model
+        return {"brand": brand, "model": model, "bodyworks": brand_models_bodywork[brand][model]}
 
     except HTTPException as e:
         raise e
     except Exception as e:
         raise HTTPException(
             status_code=500,
-            detail=f"Erro ao listar: {str(e)}")
+            detail=f"Error listing brands, models, or bodyworks: {str(e)}"
+        )
 
 
 @router.get("/list-states", response_model=dict)

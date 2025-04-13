@@ -62,7 +62,6 @@ async def startup_event():
     app.state.X_test = pd.read_csv(X_TEST_PATH)
     app.state.ORIGINAL_DF = pd.read_csv(ORIGINAL_DF_PATH)
     app.state.DATA_VALID = pd.read_csv('data/data_valid.csv')
-    app.state.BRAND_MODELS = pd.read_csv('data/brand_models.csv') # APAGAR
     app.state.STATE_CITIES = pd.read_csv('data/state_cities.csv')
 
     # Load the JSON file for BRAND_MODELS_BODYWORK
