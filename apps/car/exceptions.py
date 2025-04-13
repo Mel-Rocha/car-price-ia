@@ -4,9 +4,7 @@ from fastapi import HTTPException
 class InvalidCategoryException(HTTPException):
     VALID_CATEGORIES = [
         "fuel",
-        "gear",
-        "bodywork",
-
+        "gear"
     ]
 
     def __init__(self, category):
