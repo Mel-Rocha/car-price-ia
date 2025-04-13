@@ -1,0 +1,640 @@
+{
+  "AUDI": {
+    "A4": [
+      "SEDAN"
+    ],
+    "Q3": [
+      "SUV"
+    ],
+    "Q7": [
+      "SUV"
+    ],
+    "R8": [
+      "COUPE"
+    ]
+  },
+  "BMW": {
+    "118I": [
+      "HATCH"
+    ],
+    "120I": [
+      "HATCH"
+    ],
+    "316I": [
+      "SEDAN"
+    ],
+    "320I": [
+      "COUPE",
+      "SEDAN"
+    ],
+    "330I": [
+      "SEDAN"
+    ],
+    "430I": [
+      "CONVERSIVEL"
+    ],
+    "745LE": [
+      "SEDAN"
+    ],
+    "IX": [
+      "SUV"
+    ],
+    "IX1": [
+      "SUV"
+    ],
+    "M3": [
+      "SEDAN"
+    ],
+    "X1": [
+      "SUV"
+    ],
+    "X2": [
+      "SUV"
+    ],
+    "X4": [
+      "SUV"
+    ],
+    "X6": [
+      "SUV"
+    ]
+  },
+  "CHERY": {
+    "ARRIZO 6 PRO": [
+      "SEDAN"
+    ],
+    "TIGGO 2": [
+      "SUV"
+    ],
+    "TIGGO 5X": [
+      "SUV"
+    ],
+    "TIGGO 5X PRO": [
+      "SUV"
+    ],
+    "TIGGO 7": [
+      "SUV"
+    ],
+    "TIGGO 7 PRO": [
+      "SUV"
+    ],
+    "TIGGO 8": [
+      "SUV"
+    ],
+    "TIGGO 8 PRO": [
+      "SUV"
+    ]
+  },
+  "CHEVROLET": {
+    "CAPTIVA": [
+      "SUV"
+    ],
+    "CELTA": [
+      "HATCH"
+    ],
+    "CORSA": [
+      "HATCH"
+    ],
+    "CORVETTE": [
+      "CONVERSIVEL"
+    ],
+    "CRUZE": [
+      "HATCH",
+      "SEDAN"
+    ],
+    "D20": [
+      "PICAPE"
+    ],
+    "EQUINOX": [
+      "SUV"
+    ],
+    "JOY": [
+      "HATCH"
+    ],
+    "MONTANA": [
+      "PICAPE",
+      "PICAPE CABINE DUPLA",
+      "UTILITARIO"
+    ],
+    "ONIX": [
+      "HATCH",
+      "SEDAN"
+    ],
+    "S10": [
+      "PICAPE",
+      "PICAPE CABINE DUPLA"
+    ],
+    "SILVERADO": [
+      "PICAPE"
+    ],
+    "SPIN": [
+      "MINIVAN"
+    ],
+    "TRACKER": [
+      "SUV"
+    ],
+    "TRAILBLAZER": [
+      "SUV"
+    ]
+  },
+  "CITROEN": {
+    "AIRCROSS": [
+      "MINIVAN"
+    ],
+    "C3": [
+      "HATCH",
+      "MINIVAN"
+    ],
+    "C4 CACTUS": [
+      "SUV"
+    ]
+  },
+  "FIAT": {
+    "ARGO": [
+      "HATCH"
+    ],
+    "CRONOS": [
+      "SEDAN"
+    ],
+    "FASTBACK": [
+      "SUV"
+    ],
+    "FIORINO": [
+      "PICAPE",
+      "UTILITARIO"
+    ],
+    "GRAND SIENA": [
+      "SEDAN"
+    ],
+    "IDEA": [
+      "MINIVAN"
+    ],
+    "MOBI": [
+      "HATCH"
+    ],
+    "PALIO": [
+      "HATCH"
+    ],
+    "PALIO WEEKEND": [
+      "PERUA"
+    ],
+    "PULSE": [
+      "SUV"
+    ],
+    "PUNTO": [
+      "HATCH"
+    ],
+    "SCUDO": [
+      "MINIVAN"
+    ],
+    "STILO": [
+      "HATCH"
+    ],
+    "STRADA": [
+      "PICAPE",
+      "PICAPE CABINE DUPLA"
+    ],
+    "TITANO": [
+      "PICAPE CABINE DUPLA"
+    ],
+    "TORO": [
+      "PICAPE CABINE DUPLA"
+    ],
+    "UNO": [
+      "HATCH",
+      "UTILITARIO"
+    ]
+  },
+  "FORD": {
+    "BRONCO SPORT": [
+      "SUV"
+    ],
+    "ECOSPORT": [
+      "SUV"
+    ],
+    "EDGE": [
+      "SUV"
+    ],
+    "F-150": [
+      "PICAPE CABINE DUPLA"
+    ],
+    "F-250": [
+      "PICAPE"
+    ],
+    "FIESTA": [
+      "HATCH"
+    ],
+    "FOCUS": [
+      "HATCH"
+    ],
+    "FUSION": [
+      "SEDAN"
+    ],
+    "KA": [
+      "HATCH",
+      "SEDAN"
+    ],
+    "RANGER": [
+      "PICAPE",
+      "PICAPE CABINE DUPLA"
+    ],
+    "TERRITORY": [
+      "SUV"
+    ]
+  },
+  "HONDA": {
+    "ACCORD": [
+      "COUPE",
+      "SEDAN"
+    ],
+    "CITY": [
+      "HATCH",
+      "SEDAN"
+    ],
+    "CIVIC": [
+      "COUPE",
+      "SEDAN"
+    ],
+    "CRV": [
+      "SUV"
+    ],
+    "FIT": [
+      "HATCH"
+    ],
+    "HR-V": [
+      "SUV"
+    ]
+  },
+  "HYUNDAI": {
+    "AZERA": [
+      "SEDAN"
+    ],
+    "CRETA": [
+      "SUV"
+    ],
+    "HB20": [
+      "HATCH"
+    ],
+    "HB20S": [
+      "SEDAN"
+    ],
+    "HB20X": [
+      "HATCH"
+    ],
+    "HR": [
+      "UTILITARIO"
+    ],
+    "I30": [
+      "HATCH"
+    ],
+    "IX35": [
+      "SUV"
+    ],
+    "TUCSON": [
+      "SUV"
+    ]
+  },
+  "JAGUAR": {
+    "XE": [
+      "SEDAN"
+    ]
+  },
+  "JEEP": {
+    "COMMANDER": [
+      "SUV"
+    ],
+    "COMPASS": [
+      "SUV"
+    ],
+    "GLADIATOR": [
+      "PICAPE CABINE DUPLA"
+    ],
+    "GRAND CHEROKEE": [
+      "SUV"
+    ],
+    "RENEGADE": [
+      "SUV"
+    ],
+    "WRANGLER": [
+      "SUV"
+    ]
+  },
+  "KIA": {
+    "SORENTO": [
+      "SUV"
+    ],
+    "SOUL": [
+      "MINIVAN"
+    ],
+    "SPORTAGE": [
+      "SUV"
+    ]
+  },
+  "LAND": {
+    "ROVER DEFENDER": [
+      "SUV"
+    ],
+    "ROVER DISCOVERY": [
+      "SUV"
+    ],
+    "ROVER DISCOVERY 4": [
+      "SUV"
+    ],
+    "ROVER DISCOVERY SPORT": [
+      "SUV"
+    ],
+    "ROVER RANGE ROVER EVOQUE": [
+      "SUV"
+    ],
+    "ROVER RANGE ROVER SPORT": [
+      "SUV"
+    ],
+    "ROVER RANGE ROVER VELAR": [
+      "SUV"
+    ]
+  },
+  "MERCEDES-BENZ": {
+    "A 200": [
+      "HATCH"
+    ],
+    "B 200": [
+      "MINIVAN"
+    ],
+    "C 180": [
+      "SEDAN"
+    ],
+    "C 200": [
+      "SEDAN"
+    ],
+    "CLA 180": [
+      "SEDAN"
+    ],
+    "CLA 35 AMG": [
+      "SEDAN"
+    ],
+    "E 250": [
+      "SEDAN"
+    ],
+    "GLA 200": [
+      "SUV"
+    ],
+    "GLB 200": [
+      "SUV"
+    ],
+    "GLC 220D": [
+      "SUV"
+    ],
+    "GLC 250": [
+      "COUPE",
+      "SUV"
+    ],
+    "GLC 43 AMG": [
+      "SUV"
+    ],
+    "GLE 400": [
+      "SUV"
+    ]
+  },
+  "MINI": {
+    "COOPER": [
+      "CONVERSIVEL",
+      "HATCH"
+    ]
+  },
+  "MITSUBISHI": {
+    "ASX": [
+      "SUV"
+    ],
+    "ECLIPSE CROSS": [
+      "SUV"
+    ],
+    "L200": [
+      "PICAPE CABINE DUPLA"
+    ],
+    "L200 OUTDOOR": [
+      "PICAPE CABINE DUPLA"
+    ],
+    "L200 TRITON": [
+      "PICAPE CABINE DUPLA"
+    ],
+    "OUTLANDER": [
+      "SUV"
+    ],
+    "PAJERO": [
+      "SUV"
+    ],
+    "PAJERO DAKAR": [
+      "SUV"
+    ],
+    "PAJERO FULL": [
+      "SUV"
+    ],
+    "PAJERO SPORT": [
+      "SUV"
+    ],
+    "PAJERO TR4": [
+      "SUV"
+    ]
+  },
+  "NISSAN": {
+    "KICKS": [
+      "SUV"
+    ],
+    "LEAF": [
+      "HATCH"
+    ],
+    "SENTRA": [
+      "SEDAN"
+    ],
+    "VERSA": [
+      "SEDAN"
+    ]
+  },
+  "PEUGEOT": {
+    "2008": [
+      "SUV"
+    ],
+    "208": [
+      "HATCH"
+    ],
+    "3008": [
+      "SUV"
+    ],
+    "308": [
+      "HATCH"
+    ],
+    "406": [
+      "COUPE"
+    ],
+    "EXPERT": [
+      "UTILITARIO"
+    ]
+  },
+  "PORSCHE": {
+    "718": [
+      "CONVERSIVEL",
+      "COUPE"
+    ],
+    "911": [
+      "COUPE"
+    ],
+    "CAYENNE": [
+      "SUV"
+    ],
+    "MACAN": [
+      "SUV"
+    ],
+    "PANAMERA": [
+      "COUPE",
+      "PERUA",
+      "SEDAN"
+    ],
+    "TAYCAN": [
+      "SEDAN"
+    ]
+  },
+  "RAM": {
+    "2500": [
+      "PICAPE CABINE DUPLA"
+    ],
+    "RAMPAGE": [
+      "PICAPE CABINE DUPLA"
+    ]
+  },
+  "RENAULT": {
+    "CAPTUR": [
+      "SUV"
+    ],
+    "DUSTER": [
+      "SUV"
+    ],
+    "FLUENCE": [
+      "SEDAN"
+    ],
+    "KARDIAN": [
+      "SUV"
+    ],
+    "KWID": [
+      "HATCH"
+    ],
+    "LAGUNA": [
+      "SEDAN"
+    ],
+    "LOGAN": [
+      "SEDAN"
+    ],
+    "OROCH": [
+      "PICAPE CABINE DUPLA"
+    ],
+    "SANDERO": [
+      "HATCH"
+    ],
+    "STEPWAY": [
+      "HATCH"
+    ]
+  },
+  "SUZUKI": {
+    "JIMNY": [
+      "SUV"
+    ],
+    "VITARA": [
+      "SUV"
+    ]
+  },
+  "TOYOTA": {
+    "COROLLA": [
+      "PERUA",
+      "SEDAN"
+    ],
+    "COROLLA CROSS": [
+      "SUV"
+    ],
+    "ETIOS": [
+      "HATCH",
+      "SEDAN"
+    ],
+    "HILUX": [
+      "PICAPE",
+      "PICAPE CABINE DUPLA"
+    ],
+    "HILUX SW4": [
+      "SUV"
+    ],
+    "RAV4": [
+      "SUV"
+    ],
+    "YARIS": [
+      "HATCH",
+      "SEDAN"
+    ]
+  },
+  "VOLKSWAGEN": {
+    "AMAROK": [
+      "PICAPE CABINE DUPLA"
+    ],
+    "FOX": [
+      "HATCH"
+    ],
+    "GOL": [
+      "HATCH"
+    ],
+    "GOLF": [
+      "HATCH"
+    ],
+    "JETTA": [
+      "SEDAN"
+    ],
+    "NEW BEETLE": [
+      "HATCH"
+    ],
+    "NIVUS": [
+      "SUV"
+    ],
+    "PARATI": [
+      "PERUA"
+    ],
+    "PASSAT VARIANT": [
+      "PERUA"
+    ],
+    "POLO HATCH": [
+      "HATCH"
+    ],
+    "SAVEIRO": [
+      "PICAPE",
+      "PICAPE CABINE DUPLA"
+    ],
+    "T-CROSS": [
+      "SUV"
+    ],
+    "TAOS": [
+      "SUV"
+    ],
+    "TIGUAN": [
+      "SUV"
+    ],
+    "UP": [
+      "HATCH"
+    ],
+    "VIRTUS": [
+      "SEDAN"
+    ],
+    "VOYAGE": [
+      "SEDAN"
+    ]
+  },
+  "VOLVO": {
+    "XC40": [
+      "SUV"
+    ],
+    "XC60": [
+      "SUV"
+    ],
+    "XC90": [
+      "SUV"
+    ]
+  },
+  "WILLYS": {
+    "JEEP": [
+      "UTILITARIO"
+    ]
+  }
+}
