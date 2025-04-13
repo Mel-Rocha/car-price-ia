@@ -11,14 +11,14 @@ ORIGINAL_DF_PATH = os.path.join('data', 'clean_original_df.csv')
 
 
 class Config:
-    valid_brands = set()
+    valid_brands = []
 
     @classmethod
     def load_valid_brands(cls, data_valid: pd.DataFrame):
         """
-        Popula o set valid_brands com as marcas únicas do DataFrame carregado.
+        Populates the valid_brands list with the column names of the DataFrame.
         """
-        cls.valid_brands = set(data_valid['brand'].dropna().unique())
+        cls.valid_brands = list(data_valid.columns)
 
 
 config = Config()

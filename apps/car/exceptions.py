@@ -3,7 +3,6 @@ from fastapi import HTTPException
 
 class InvalidCategoryException(HTTPException):
     VALID_CATEGORIES = [
-        "brand",
         "fuel",
         "gear",
         "bodywork",

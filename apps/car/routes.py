@@ -62,61 +62,6 @@ async def predict_car_price(request: Request, car: Car):
                             detail=f"Erro ao fazer a previsão: {str(e)}")
 
 
-@router.get("/list/{category}", response_model=dict)
-async def list_category(
-    request: Request, category: str, page: int = Query(
-        1, ge=1), page_size: int = Query(
-            10, ge=1)):
-    """
-    Objetivo:
-    - Listagem páginada de categorias válidas (brand, fuel, gear, bodywork).
-
-    Parâmetros Obrigatórios:
-    - category: Categoria a ser listada (brand, fuel, gear, bodywork).
-
-    Parâmetros Opcionais:
-    - page: Número da página (default: 1).
-    - page_size: Tamanho da página (default: 10).
-
-    Retorna:
-    - JSON com a listagem da categoria, número da página, tamanho da página,
-      quantidade total de páginas e quantidade total de resultados.
-    """
-    if category not in InvalidCategoryException.VALID_CATEGORIES:
-        raise InvalidCategoryException(category)
-    try:
-        data_valid = request.app.state.DATA_VALID
-
-        if category not in data_valid.columns:
-            raise HTTPException(
-                status_code=400,
-                detail=f"Invalid category: {category}")
-
-        valid_values = data_valid[category].dropna().unique().tolist()
-
-        total_results = len(valid_values)
-        total_pages = (total_results + page_size - 1) // page_size
-
-        if page > total_pages:
-            page = total_pages
-
-        start = (page - 1) * page_size
-        end = start + page_size
-        values_list = valid_values[start:end]
-
-        return {
-            "page": page,
-            "page_size": page_size,
-            "total_pages": total_pages,
-            "total_results": total_results,
-            category: values_list
-        }
-
-    except Exception as e:
-        raise HTTPException(status_code=500,
-                            detail=f"Error listing {category}: {str(e)}")
-
-
 @router.post("/brand_predict/{brand}", response_model=dict)
 async def brand_predict(request: Request,
                         brand: str = Path(...,
@@ -209,3 +154,142 @@ async def brand_predict(request: Request,
         raise HTTPException(
             status_code=500,
             detail=f"Erro ao fazer a previsão: {str(e)}\n{''.join(tb_str)}")
+
+
+@router.get("/list/{category}", response_model=dict)
+async def list_category(
+    request: Request, category: str, page: int = Query(
+        1, ge=1), page_size: int = Query(
+            10, ge=1)):
+    """
+    Objetivo:
+    - Listagem páginada de categorias válidas (fuel, gear, bodywork).
+
+    Parâmetros Obrigatórios:
+    - category: Categoria a ser listada  (fuel, gear, bodywork).
+
+    Parâmetros Opcionais:
+    - page: Número da página (default: 1).
+    - page_size: Tamanho da página (default: 10).
+
+    Retorna:
+    - JSON com a listagem da categoria, número da página, tamanho da página,
+      quantidade total de páginas e quantidade total de resultados.
+    """
+    if category not in InvalidCategoryException.VALID_CATEGORIES:
+        raise InvalidCategoryException(category)
+    try:
+        data_valid = request.app.state.DATA_VALID
+
+        if category not in data_valid.columns:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Invalid category: {category}")
+
+        valid_values = data_valid[category].dropna().unique().tolist()
+
+        total_results = len(valid_values)
+        total_pages = (total_results + page_size - 1) // page_size
+
+        if page > total_pages:
+            page = total_pages
+
+        start = (page - 1) * page_size
+        end = start + page_size
+        values_list = valid_values[start:end]
+
+        return {
+            "page": page,
+            "page_size": page_size,
+            "total_pages": total_pages,
+            "total_results": total_results,
+            category: values_list
+        }
+
+    except Exception as e:
+        raise HTTPException(status_code=500,
+                            detail=f"Error listing {category}: {str(e)}")
+
+
+@router.get("/list-brands", response_model=dict)
+async def list_brands_or_models(
+    request: Request,
+    brand: str = Query(None, description="Nome da marca (opcional)")
+):
+    """
+    Lista todas as marcas ou os modelos de uma marca específica.
+
+    Parâmetros:
+    - brand (str): Nome da marca (opcional).
+
+    Retorna:
+    - JSON com a lista de marcas ou modelos.
+    """
+    try:
+        # Carregar o DataFrame de marcas e modelos
+        df_brands = request.app.state.BRAND_MODELS
+
+        if brand:
+            # Normalizar a entrada da marca
+            brand = brand.strip().upper()
+
+            # Verificar se a marca existe no DataFrame
+            if brand not in df_brands.columns:
+                raise HTTPException(status_code=400, detail="Marca inválida")
+
+            # Listar os modelos da marca
+            models = df_brands[brand].dropna().tolist()
+            return {"brand": brand, "models": models}
+
+        # Listar todas as marcas
+        brands = df_brands.columns.tolist()
+        return {"brands": brands}
+
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Erro ao listar: {str(e)}")
+
+
+@router.get("/list-states", response_model=dict)
+async def list_states_or_cities(
+    request: Request,
+    state: str = Query(None, description="Nome do estado (opcional)")
+):
+    """
+    Lista todos os estados ou as cidades de um estado específico.
+
+    Parâmetros:
+    - state (str): Nome do estado (opcional).
+
+    Retorna:
+    - JSON com a lista de estados ou cidades.
+    """
+    try:
+        # Carregar o DataFrame de estados e cidades
+        df_states = request.app.state.STATE_CITIES
+
+        if state:
+            # Normalizar a entrada do estado
+            state = state.strip().upper()
+
+            # Verificar se o estado existe no DataFrame
+            if state not in df_states.columns:
+                raise HTTPException(status_code=400, detail="Estado inválido")
+
+            # Listar as cidades do estado
+            cities = df_states[state].dropna().tolist()
+            return {"state": state, "cities": cities}
+
+        # Listar todos os estados
+        states = df_states.columns.tolist()
+        return {"states": states}
+
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Erro ao listar: {str(e)}")
