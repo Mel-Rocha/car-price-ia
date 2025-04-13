@@ -152,6 +152,8 @@ async def list_brands_or_models(
         brands = df_brands.columns.tolist()
         return {"brands": brands}
 
+    except HTTPException as e:
+        raise e
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erro ao listar: {str(e)}")
 
