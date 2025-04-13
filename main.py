@@ -1,3 +1,4 @@
+import json
 import joblib
 import pandas as pd
 from fastapi import FastAPI
@@ -9,7 +10,7 @@ from apps.car import routes as car_router
 from apps.docs import routes as docs_router
 from apps.auth.middlewares import AuthMiddleware
 from apps.docs.custom_openai import custom_openapi
-from settings import config, MODEL_PATH, NORMALIZER_PATH, TRANSFORMER_PATH, X_TEST_PATH, ORIGINAL_DF_PATH
+from settings import config, MODEL_PATH, NORMALIZER_PATH, TRANSFORMER_PATH, X_TEST_PATH, ORIGINAL_DF_PATH, BRAND_MODELS_BODYWORK_PATH
 
 
 class AppState:
@@ -61,7 +62,12 @@ async def startup_event():
     app.state.X_test = pd.read_csv(X_TEST_PATH)
     app.state.ORIGINAL_DF = pd.read_csv(ORIGINAL_DF_PATH)
     app.state.DATA_VALID = pd.read_csv('data/data_valid.csv')
-    app.state.BRAND_MODELS = pd.read_csv('data/brand_models.csv')
+    app.state.BRAND_MODELS = pd.read_csv('data/brand_models.csv') # APAGAR
     app.state.STATE_CITIES = pd.read_csv('data/state_cities.csv')
 
-    config.load_valid_brands(app.state.BRAND_MODELS)
+    # Load the JSON file for BRAND_MODELS_BODYWORK
+    with open(BRAND_MODELS_BODYWORK_PATH, 'r') as file:
+        app.state.BRAND_MODELS_BODYWORK = json.load(file)
+
+    # Load valid brands from the JSON structure
+    config.load_valid_brands(BRAND_MODELS_BODYWORK_PATH)

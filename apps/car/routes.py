@@ -83,13 +83,13 @@ async def brand_predict(request: Request,
     """
     try:
         brand = brand.upper()
-        df_brands = request.app.state.BRAND_MODELS
+        brand_models_bodywork = request.app.state.BRAND_MODELS_BODYWORK
 
-        if brand not in df_brands.columns:
-            raise HTTPException(status_code=400, detail="Marca inválida")
+        if brand not in brand_models_bodywork:
+            raise HTTPException(status_code=400, detail="Invalid brand")
 
-        # Get the list of models for the brand
-        models = df_brands[brand].dropna().tolist()
+        # Get the models and bodywork for the brand
+        models = brand_models_bodywork[brand]
 
         # Objetos globais do modelo
         MODEL = request.app.state.MODEL
