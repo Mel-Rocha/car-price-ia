@@ -117,6 +117,45 @@ async def list_category(
                             detail=f"Error listing {category}: {str(e)}")
 
 
+
+@router.get("/list-brands", response_model=dict)
+async def list_brands_or_models(
+    request: Request,
+    brand: str = Query(None, description="Nome da marca (opcional)")
+):
+    """
+    Lista todas as marcas ou os modelos de uma marca específica.
+
+    Parâmetros:
+    - brand (str): Nome da marca (opcional).
+
+    Retorna:
+    - JSON com a lista de marcas ou modelos.
+    """
+    try:
+        # Carregar o DataFrame de marcas e modelos
+        df_brands = request.app.state.BRAND_MODELS
+
+        if brand:
+            # Normalizar a entrada da marca
+            brand = brand.strip().upper()
+
+            # Verificar se a marca existe no DataFrame
+            if brand not in df_brands.columns:
+                raise HTTPException(status_code=400, detail="Marca inválida")
+
+            # Listar os modelos da marca
+            models = df_brands[brand].dropna().tolist()
+            return {"brand": brand, "models": models}
+
+        # Listar todas as marcas
+        brands = df_brands.columns.tolist()
+        return {"brands": brands}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erro ao listar: {str(e)}")
+
+
 @router.post("/brand_predict/{brand}", response_model=dict)
 async def brand_predict(request: Request,
                         brand: str = Path(...,
