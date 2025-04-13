@@ -69,10 +69,10 @@ async def list_category(
             10, ge=1)):
     """
     Objetivo:
-    - Listagem páginada de categorias válidas (brand, fuel, gear, bodywork).
+    - Listagem páginada de categorias válidas (fuel, gear, bodywork).
 
     Parâmetros Obrigatórios:
-    - category: Categoria a ser listada (brand, fuel, gear, bodywork).
+    - category: Categoria a ser listada  (fuel, gear, bodywork).
 
     Parâmetros Opcionais:
     - page: Número da página (default: 1).

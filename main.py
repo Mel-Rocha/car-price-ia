@@ -63,4 +63,4 @@ async def startup_event():
     app.state.DATA_VALID = pd.read_csv('data/data_valid.csv')
     app.state.BRAND_MODELS = pd.read_csv('data/brand_models.csv')
 
-    config.load_valid_brands(app.state.DATA_VALID)
+    config.load_valid_brands(app.state.BRAND_MODELS)
