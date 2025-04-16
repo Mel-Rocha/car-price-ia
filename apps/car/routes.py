@@ -68,7 +68,8 @@ async def brand_predict(request: Request,
                                           description="Brand")):
     """
     Objetivo:
-    - Prever o preço de todos os modelos de uma determinada marca para o próximo ano modelo.
+    - Prever o preço de todos os modelos de uma determinada marca utilizando as configurações
+    mais frequentes de cada modelo, visto nos dados históricos de treinamento.
 
     Descrição:
     - Utilizamos como entrada a **combinação de características mais frequente** para cada modelo,
@@ -98,7 +99,6 @@ async def brand_predict(request: Request,
         X_test = request.app.state.X_test
         df = request.app.state.ORIGINAL_DF  # Dados originais do treinamento
 
-        next_year = datetime.now().year + 1
         predictions = []
 
         for model in models:
@@ -115,7 +115,7 @@ async def brand_predict(request: Request,
             input_data = pd.DataFrame({
                 'brand': [brand],
                 'model': [model],
-                'year_model': [next_year],
+                'year_model': [most_frequent_combination['year_model']],
                 'mileage': [most_frequent_combination["mileage"]],
                 'gear': [most_frequent_combination["gear"]],
                 'fuel': [most_frequent_combination["fuel"]],
@@ -132,6 +132,7 @@ async def brand_predict(request: Request,
 
             predictions.append({
                 "model": model,
+                "year_model": int(most_frequent_combination["year_model"]),
                 "mileage": most_frequent_combination["mileage"],
                 "gear": most_frequent_combination["gear"],
                 "fuel": most_frequent_combination["fuel"],
@@ -143,7 +144,6 @@ async def brand_predict(request: Request,
 
         return {
             "brand": brand,
-            "year_model": next_year,
             "predictions": predictions
         }
 
