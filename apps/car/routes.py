@@ -1,6 +1,5 @@
 import logging
 import traceback
-from datetime import datetime
 
 import pandas as pd
 from fastapi import APIRouter, HTTPException, Request, Query, Path
@@ -63,23 +62,22 @@ async def predict_car_price(request: Request, car: Car):
 
 
 @router.post("/brand_predict/{brand}", response_model=dict)
-async def brand_predict(request: Request,
-                        brand: str = Path(...,
-                                          description="Brand")):
+async def brand_predict(
+    request: Request,
+    brand: str = Path(..., description="Brand"),
+    page: int = Query(1, ge=1, description="Page number (default: 1)"),
+    page_size: int = Query(10, ge=1, description="Number of items per page (default: 10)")
+):
     """
-    Objetivo:
-    - Prever o preço de todos os modelos de uma determinada marca para o próximo ano modelo.
+    Predicts the price of all models of a specific brand for the next model year.
 
-    Descrição:
-    - Utilizamos como entrada a **combinação de características mais frequente** para cada modelo,
-      garantindo que as previsões sejam baseadas em dados historicamente representativos.
+    Parameters:
+    - brand (str): Brand name (required in the URL).
+    - page (int): Page number for pagination (default: 1).
+    - page_size (int): Number of items per page for pagination (default: 10).
 
-    Parâmetros:
-    - brand (str): Nome da marca (obrigatório na URL).
-
-    Retorna:
-    - JSON contendo as previsões de preço para todos os modelos da marca,
-      considerando os dados de entrada mais comuns no histórico do dataset.
+    Returns:
+    - JSON containing price predictions for the specified page.
     """
     try:
         brand = brand.upper()
@@ -89,33 +87,43 @@ async def brand_predict(request: Request,
             raise HTTPException(status_code=400, detail="Invalid brand")
 
         # Get the models and bodywork for the brand
-        models = brand_models_bodywork[brand]
+        models = list(brand_models_bodywork[brand].keys())
 
-        # Objetos globais do modelo
+        # Pagination logic
+        total_results = len(models)
+        total_pages = (total_results + page_size - 1) // page_size
+
+        if page > total_pages:
+            page = total_pages
+
+        start = (page - 1) * page_size
+        end = start + page_size
+        paginated_models = models[start:end]
+
+        # Global model objects
         MODEL = request.app.state.MODEL
         NORMALIZER = request.app.state.NORMALIZER
         TRANSFORMER = request.app.state.TRANSFORMER
         X_test = request.app.state.X_test
-        df = request.app.state.ORIGINAL_DF  # Dados originais do treinamento
+        df = request.app.state.ORIGINAL_DF  # Training dataset
 
-        next_year = datetime.now().year + 1
         predictions = []
 
-        for model in models:
-            # Filtrar apenas os registros da marca e modelo
+        for model in paginated_models:
+            # Filter records for the brand and model
             valid_combinations = df[(df["brand"] == brand)
                                     & (df["model"] == model)]
 
             if valid_combinations.empty:
-                continue  # Se não há registros, pula para o próximo modelo
+                continue  # Skip if no records exist
 
-            # Escolher a combinação mais frequente
+            # Choose the most frequent combination
             most_frequent_combination = valid_combinations.mode().iloc[0]
 
             input_data = pd.DataFrame({
                 'brand': [brand],
                 'model': [model],
-                'year_model': [next_year],
+                'year_model': [most_frequent_combination['year_model']],
                 'mileage': [most_frequent_combination["mileage"]],
                 'gear': [most_frequent_combination["gear"]],
                 'fuel': [most_frequent_combination["fuel"]],
@@ -124,7 +132,7 @@ async def brand_predict(request: Request,
                 'state': [most_frequent_combination["state"]]
             })
 
-            # Transformação dos dados
+            # Transform the data
             transformed_data = transform_data(
                 input_data, NORMALIZER, TRANSFORMER, X_test, df)
             predicted_price = MODEL.predict(transformed_data)[0]
@@ -132,6 +140,7 @@ async def brand_predict(request: Request,
 
             predictions.append({
                 "model": model,
+                "year_model": int(most_frequent_combination["year_model"]),
                 "mileage": most_frequent_combination["mileage"],
                 "gear": most_frequent_combination["gear"],
                 "fuel": most_frequent_combination["fuel"],
@@ -143,7 +152,10 @@ async def brand_predict(request: Request,
 
         return {
             "brand": brand,
-            "year_model": next_year,
+            "page": page,
+            "page_size": page_size,
+            "total_pages": total_pages,
+            "total_results": total_results,
             "predictions": predictions
         }
 
@@ -241,14 +253,20 @@ async def list_brands_models_bodyworks(
 
         if not model:
             # List all models of the brand
-            return {"brand": brand, "models": list(brand_models_bodywork[brand].keys())}
+            return {
+                "brand": brand, "models": list(
+                    brand_models_bodywork[brand].keys())}
 
         model = model.strip().upper()
         if model not in brand_models_bodywork[brand]:
-            raise HTTPException(status_code=400, detail="Invalid model for the specified brand")
+            raise HTTPException(status_code=400,
+                                detail="Invalid model for the specified brand")
 
         # List all bodyworks of the model
-        return {"brand": brand, "model": model, "bodyworks": brand_models_bodywork[brand][model]}
+        return {
+            "brand": brand,
+            "model": model,
+            "bodyworks": brand_models_bodywork[brand][model]}
 
     except HTTPException as e:
         raise e
