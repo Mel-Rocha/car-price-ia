@@ -1,6 +1,5 @@
 import logging
 import traceback
-from datetime import datetime
 
 import pandas as pd
 from fastapi import APIRouter, HTTPException, Request, Query, Path
@@ -95,7 +94,7 @@ async def brand_predict(
         total_pages = (total_results + page_size - 1) // page_size
 
         if page > total_pages:
-            raise HTTPException(status_code=400, detail="Page number exceeds total pages")
+            page = total_pages
 
         start = (page - 1) * page_size
         end = start + page_size
@@ -112,7 +111,8 @@ async def brand_predict(
 
         for model in paginated_models:
             # Filter records for the brand and model
-            valid_combinations = df[(df["brand"] == brand) & (df["model"] == model)]
+            valid_combinations = df[(df["brand"] == brand)
+                                    & (df["model"] == model)]
 
             if valid_combinations.empty:
                 continue  # Skip if no records exist
@@ -133,7 +133,8 @@ async def brand_predict(
             })
 
             # Transform the data
-            transformed_data = transform_data(input_data, NORMALIZER, TRANSFORMER, X_test, df)
+            transformed_data = transform_data(
+                input_data, NORMALIZER, TRANSFORMER, X_test, df)
             predicted_price = MODEL.predict(transformed_data)[0]
             formatted_price = format_price(predicted_price)
 
@@ -252,14 +253,20 @@ async def list_brands_models_bodyworks(
 
         if not model:
             # List all models of the brand
-            return {"brand": brand, "models": list(brand_models_bodywork[brand].keys())}
+            return {
+                "brand": brand, "models": list(
+                    brand_models_bodywork[brand].keys())}
 
         model = model.strip().upper()
         if model not in brand_models_bodywork[brand]:
-            raise HTTPException(status_code=400, detail="Invalid model for the specified brand")
+            raise HTTPException(status_code=400,
+                                detail="Invalid model for the specified brand")
 
         # List all bodyworks of the model
-        return {"brand": brand, "model": model, "bodyworks": brand_models_bodywork[brand][model]}
+        return {
+            "brand": brand,
+            "model": model,
+            "bodyworks": brand_models_bodywork[brand][model]}
 
     except HTTPException as e:
         raise e
